@@ -2,6 +2,9 @@ package com.example.mobileappwsrestassuredtest;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class TestCreateUser {
 
@@ -47,5 +50,20 @@ class TestCreateUser {
 
         String userId = response.jsonPath().getString("userId");
         assertNotNull(userId);
+        assertEquals(30, userId.length());
+
+        String bodyString = response.body().asString();
+        try {
+            JSONObject responseBodyJson = new JSONObject(bodyString);
+            JSONArray addresses = responseBodyJson.getJSONArray("addresses");
+            assertNotNull(addresses);
+            assertEquals(1, addresses.length());
+
+            String addressId = addresses.getJSONObject(0).getString("addressId");
+            assertNotNull(addressId);
+            assertEquals(30, addressId.length());
+        } catch (JSONException e) {
+            fail(e.getMessage());
+        }
     }
 }
