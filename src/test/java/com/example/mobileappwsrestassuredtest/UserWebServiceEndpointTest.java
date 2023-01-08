@@ -49,8 +49,8 @@ class UserWebServiceEndpointTest {
     @Test
     @Order(2)
     final void testGetUserDetails() {
-        Response response = given().header("Authorization", authorization).accept(APPLICATION_JSON).when()
-                .get("/users/" + userId)
+        Response response = given().pathParam("userId", userId).header("Authorization", authorization).accept(APPLICATION_JSON).when()
+                .get("/users/{userId}")
                 .then()
                 .statusCode(200)
                 .contentType(APPLICATION_JSON)
