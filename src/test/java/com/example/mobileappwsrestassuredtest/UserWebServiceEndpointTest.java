@@ -6,9 +6,11 @@ import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -56,8 +58,17 @@ class UserWebServiceEndpointTest {
 
         String userPublicId = response.jsonPath().getString("userId");
         String userEmail = response.jsonPath().getString("email");
+        String firstName = response.jsonPath().getString("firstName");
+        String lastName = response.jsonPath().getString("lastName");
+        List<Map<String, String>> addresses = response.jsonPath().getList("addresses");
+        String addressId = addresses.get(0).get("addressId");
 
         assertNotNull(userPublicId);
         assertNotNull(userEmail);
+        assertNotNull(firstName);
+        assertNotNull(lastName);
+        assertEquals(EMAIL_ADDRESS, userEmail);
+        assertEquals(1, addresses.size());
+        assertEquals(30, addressId.length());
     }
 }
