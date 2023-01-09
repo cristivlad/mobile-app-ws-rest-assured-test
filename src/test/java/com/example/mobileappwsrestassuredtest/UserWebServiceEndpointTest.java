@@ -99,7 +99,22 @@ class UserWebServiceEndpointTest {
         assertNotNull(responseAddresses);
         assertEquals(addresses.size(), responseAddresses.size());
         assertEquals(addresses.get(0).get("streetName"), responseAddresses.get(0).get("streetName"));
+    }
 
+    @Test
+    @Order(4)
+    final void testDeleteUser() {
+        Response response = given().header("Authorization", authorization)
+                .accept(APPLICATION_JSON)
+                .pathParam("userId", userId)
+                .when()
+                .delete("/user/{userId}")
+                .then()
+                .statusCode(200)
+                .contentType(APPLICATION_JSON).extract().response();
 
+        String operationResult = response.jsonPath().getString("operationResult");
+
+        assertEquals("SUCCESS", operationResult);
     }
 }
