@@ -20,6 +20,7 @@ class UserWebServiceEndpointTest {
     private static final String APPLICATION_JSON = "application/json";
     private static String authorization;
     private static String userId;
+    private static List<Map<String, String>> addresses;
 
     @BeforeEach
     void setUp() {
@@ -60,7 +61,7 @@ class UserWebServiceEndpointTest {
         String userEmail = response.jsonPath().getString("email");
         String firstName = response.jsonPath().getString("firstName");
         String lastName = response.jsonPath().getString("lastName");
-        List<Map<String, String>> addresses = response.jsonPath().getList("addresses");
+        addresses = response.jsonPath().getList("addresses");
         String addressId = addresses.get(0).get("addressId");
 
         assertNotNull(userPublicId);
@@ -70,5 +71,35 @@ class UserWebServiceEndpointTest {
         assertEquals(EMAIL_ADDRESS, userEmail);
         assertEquals(1, addresses.size());
         assertEquals(30, addressId.length());
+    }
+
+    @Test
+    @Order(3)
+    final void testUpdateUser() {
+        Map<String, Object> userDetails = new HashMap<>();
+        userDetails.put("firstName", "FirstName");
+        userDetails.put("lastName", "LastName");
+
+        Response response = given().contentType(APPLICATION_JSON).accept(APPLICATION_JSON)
+                .header("Authorization", authorization)
+                .pathParam("userId", userId)
+                .body(userDetails)
+                .when()
+                .put("/users/{userId}")
+                .then()
+                .statusCode(200)
+                .contentType(APPLICATION_JSON).extract().response();
+
+        String firstName = response.jsonPath().getString("firstName");
+        String lastName = response.jsonPath().getString("lastName");
+        List<Map<String, String>> responseAddresses = response.jsonPath().getList("addresses");
+
+        assertEquals("FirstName", firstName);
+        assertEquals("LastName", lastName);
+        assertNotNull(responseAddresses);
+        assertEquals(addresses.size(), responseAddresses.size());
+        assertEquals(addresses.get(0).get("streetName"), responseAddresses.get(0).get("streetName"));
+
+
     }
 }
